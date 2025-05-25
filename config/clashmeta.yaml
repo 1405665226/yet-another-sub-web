@@ -48,15 +48,21 @@ dns:
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter: ["*", "+.lan", "+.local"]
-  nameserver: ['https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query']
-  proxy-server-nameserver: ['https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query']
+  fallback-filter: {geoip: true, geoip-code: 'CN', ipcidr: ['240.0.0.0/4', '0.0.0.0/32']}
+  default-nameserver: ['223.5.5.5', '119.29.29.29', '8.8.8.8', '1.1.1.1']
+  direct-nameserver: ['223.5.5.5', '119.29.29.29']
+  nameserver: ['https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query', 'https://dns.google/dns-query', 'https://dns.cloudflare.com/dns-query']
+  proxy-server-nameserver: ['https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query', 'https://dns.google/dns-query', 'https://dns.cloudflare.com/dns-query']
   nameserver-policy:
     "geosite_cn,geoip_cn":
-      - https://dns.alidns.com/dns-query
-      - https://doh.pub/dns-query
+      - 'https://dns.alidns.com/dns-query'
+      - 'https://doh.pub/dns-query'
     "geosite_!cn":
-      - https://dns.cloudflare.com/dns-query
-      - https://dns.google/dns-query
+      - 'https://dns.cloudflare.com/dns-query'
+      - 'https://dns.google/dns-query'
+  fallback:
+    - 'https://dns.google/dns-query'
+    - 'https://dns.cloudflare.com/dns-query'
 
 proxies:
 
@@ -65,7 +71,6 @@ proxy-groups:
   - {name: ⚡ 自动选择, type: url-test, include-all: true, url: https://www.gstatic.com/generate_204, interval: 300, tolerance: 50}
 
 rules:
-  - PROCESS-NAME,rustdesk.exe,DIRECT
   - DOMAIN-SUFFIX,googleapis.cn,🚀 节点选择
   - RULE-SET,geosite-category-ads-all,REJECT
   - RULE-SET,geosite-cn,DIRECT
