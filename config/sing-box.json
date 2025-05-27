@@ -12,21 +12,17 @@
       "external_ui_download_detour": "DIRECT",
       "default_mode": "rule"
     },
-    "cache_file": {
+  "cache_file": {
       "enabled": true,
       "store_fakeip": true,
       "store_rdrc": true
     }
   },
   "dns": {
-    "fakeip": {
-        "enabled": true,
-        "inet4_range": "198.18.0.0/15",
-        "inet6_range": "fc00::/18"
-      },
     "servers": [
       {
         "tag": "remote",
+        "type": "https",
         "address": "https://8.8.8.8/dns-query",
         "detour": "🚀 节点选择"
       },
@@ -37,19 +33,12 @@
       },
       {
         "tag": "fakeip",
-        "address": "fakeip"
-      },
-      {
-        "tag": "block",
-        "address": "rcode://success"
+        "type": "fakeip",
+        "inet4_range": "198.18.0.0/15",
+        "inet6_range": "fc00::/18"
       }
     ],
-    "rules": [
-      {
-        "outbound": "any",
-        "server": "local",
-        "disable_cache": true
-      },   
+    "rules": [  
       {
         "clash_mode": "direct",
         "server": "local"
@@ -59,40 +48,28 @@
         "server": "remote"
       },
       {
-        "rule_set": "geosite-category-ads-all",
-        "server": "block"
-      },
-      {
-        "rule_set": [
-          "geosite-cn",
-          "geoip-cn"
-        ],
+        "rule_set": "geosite-cn",
         "server": "local"
       },
       {
-        "rule_set": "geosite-geolocation-!cn",
+        "rule_set": "geosite-!cn",
         "server": "remote"
       },
       {
-          "query_type": [
-            "A",
-            "AAAA"
-          ],
-          "server": "fakeip"
-        }
+        "rule_set": "geoip-cn",
+        "server": "local"
+      },
     ],
-    "final": "local",
     "independent_cache": true,
     "strategy": "prefer_ipv4"
   },
   "inbounds": [
     {
       "type": "tun",
-      "interface_name": "tun",
       "address": [
           "172.19.0.0/30",
           "fdfe:dcba:9876::0/126"
-        ],
+      ],
       "mtu": 9000,
       "auto_route": true,
       "strict_route": true,
@@ -141,10 +118,13 @@
     },
     {
       "tag": "REJECT",
-      "type": "block"
+      "type": "reject"
     }
   ],
   "route": {
+    "default_domain_resolver": {
+      "server": "local"
+    },
     "auto_detect_interface": true,
     "final": "🚀 节点选择",
     "rules": [
@@ -196,7 +176,7 @@
         "outbound": "REJECT"
       },
       {
-        "rule_set": "geosite-geolocation-!cn",
+        "rule_set": "geosite-!cn",
         "outbound": "🚀 节点选择"
       },
       {
@@ -223,7 +203,7 @@
         "download_detour": "DIRECT"
       },
       {
-        "tag": "geosite-geolocation-!cn",
+        "tag": "geosite-!cn",
         "type": "remote",
         "format": "binary",
         "url": "https://ghproxy.cn/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/geolocation-!cn.srs",
