@@ -5,11 +5,13 @@ mode: rule
 log-level: debug
 unified-delay: false
 tcp-concurrent: true
-find-process-mode: strict
-global-client-fingerprint: chrome
+
 external-controller: '127.0.0.1:9090'
 external-ui: ui
 external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
+
+find-process-mode: strict
+global-client-fingerprint: chrome
 
 profile:
   store-selected: true
@@ -42,15 +44,28 @@ tun:
 
 dns:
   enable: true
-  listen: :53
+  listen: :1053
   ipv6: true
   use-hosts: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
+  fake-ip-filter-mode: blacklist
   fake-ip-filter: ["*", "+.lan", "+.local"]
-  default-nameserver: ['223.5.5.5', '119.29.29.29', '8.8.8.8', '1.1.1.1']
-  nameserver: ['https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query', 'https://dns.google/dns-query', 'https://dns.cloudflare.com/dns-query']
-  proxy-server-nameserver: ['https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query', 'https://dns.google/dns-query', 'https://dns.cloudflare.com/dns-query']
+  default-nameserver: ['223.5.5.5', '119.29.29.29']
+  nameserver: ['https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query']
+  proxy-server-nameserver: ['https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query']
+  fallback: ['https://dns.google/dns-query', 'https://dns.cloudflare.com/dns-query']
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    geosite: 
+      - CN
+    ipcidr:
+      - 240.0.0.0/4
+    domain:
+      - '+.google.com'
+      - '+.facebook.com'
+      - '+.youtube.com'
   nameserver-policy:
     "geosite_cn,geoip_cn":
       - 'https://dns.alidns.com/dns-query'
@@ -68,6 +83,8 @@ proxy-groups:
 rules:
   - DOMAIN-SUFFIX,googleapis.cn,🚀 节点选择
   - RULE-SET,geosite-category-ads-all,REJECT
+  - RULE-SET,AWAvenue-Ads,REJECT
+  - RULE-SET,Loyalsoldier-Ads,REJECT
   - RULE-SET,geosite-cn,DIRECT
   - RULE-SET,geoip-cn,DIRECT
   - RULE-SET,geosite-!cn,🚀 节点选择
@@ -98,3 +115,15 @@ rule-providers:
     interval: 86400
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs"
     format: mrs
+  AWAvenue-Ads:
+    type: http
+    behavior: domain
+    interval: 86400
+    url: "https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml"
+    format: yaml
+  Loyalsoldier-Ads:
+    type: http
+    behavior: domain
+    interval: 86400
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt"
+    format: yaml
