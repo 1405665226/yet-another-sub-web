@@ -44,35 +44,44 @@ tun:
 
 dns:
   enable: true
-  listen: :1053
+  listen: :53
   ipv6: true
   use-hosts: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter-mode: blacklist
-  fake-ip-filter: ["*", "+.lan", "+.local"]
-  default-nameserver: ['223.5.5.5', '119.29.29.29']
-  nameserver: ['https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query']
-  proxy-server-nameserver: ['https://doh.pub/dns-query', 'https://dns.alidns.com/dns-query']
-  fallback: ['https://dns.google/dns-query', 'https://dns.cloudflare.com/dns-query']
+  fake-ip-filter:
+    - "*"
+    - "+.lan"
+    - "+.local"
+  default-nameserver:
+    - '223.5.5.5'
+    - '119.29.29.29'
+  nameserver:
+    - 'https://dns.alidns.com/dns-query'
+    - 'https://doh.pub/dns-query'
+  proxy-server-nameserver:
+    - 'https://dns.alidns.com/dns-query'
+    - 'https://doh.pub/dns-query'
+  fallback:
+    - 'https://dns.google/dns-query'
+    - 'https://dns.cloudflare.com/dns-query'
+    - 'tls://8.8.4.4:853'
   fallback-filter:
     geoip: true
-    geoip-code: CN
-    geosite: 
-      - CN
     ipcidr:
-      - 240.0.0.0/4
-    domain:
-      - '+.google.com'
-      - '+.facebook.com'
-      - '+.youtube.com'
+      - '240.0.0.0/4'
+      - '0.0.0.0/32'
   nameserver-policy:
-    "geosite_cn,geoip_cn":
+    "rule-set:geosite-cn":
       - 'https://dns.alidns.com/dns-query'
       - 'https://doh.pub/dns-query'
-    "geosite_!cn":
-      - 'https://dns.cloudflare.com/dns-query'
+    "rule-set:geosite-!cn":
       - 'https://dns.google/dns-query'
+      - 'https://dns.cloudflare.com/dns-query'
+    "rule-set:geosite-category-ads-all": rcode://success
+    "rule-set:AWAvenue-Ads": rcode://success
+    "rule-set:Loyalsoldier-Ads": rcode://success
 
 proxies:
 
@@ -87,6 +96,8 @@ rules:
   - RULE-SET,Loyalsoldier-Ads,REJECT
   - RULE-SET,geosite-cn,DIRECT
   - RULE-SET,geoip-cn,DIRECT
+  - RULE-SET,geosite-private,DIRECT
+  - RULE-SET,geoip-private,DIRECT
   - RULE-SET,geosite-!cn,🚀 节点选择
   - MATCH,🚀 节点选择
 
@@ -126,4 +137,16 @@ rule-providers:
     behavior: domain
     interval: 86400
     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt"
+    format: yaml
+  geosite-private:
+    type: http
+    behavior: domain
+    interval: 86400
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"
+    format: yaml
+  geoip-private:
+    type: http
+    behavior: domain
+    interval: 86400
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
     format: yaml
