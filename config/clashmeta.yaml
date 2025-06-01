@@ -51,9 +51,13 @@ dns:
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter-mode: blacklist
   fake-ip-filter:
-    - "*"
-    - "+.lan"
-    - "+.local"
+    - '+.lan'
+    - '+.local'
+    - 'localhost'
+    - '10.0.0.0/8'
+    - '192.168.0.0/16'
+    - '172.16.0.0/12'
+    - '127.0.0.0/8'
   default-nameserver:
     - '223.5.5.5'
     - '119.29.29.29'
@@ -86,8 +90,8 @@ dns:
 proxies:
 
 proxy-groups:
-  - {name: 🚀 节点选择, type: select, proxies: [⚡ 自动选择, DIRECT, REJECT], include-all: true}
-  - {name: ⚡ 自动选择, type: url-test, include-all: true, url: https://www.gstatic.com/generate_204, interval: 300, tolerance: 50}
+  - {name: 🚀 节点选择, type: select, proxies: [⚡ 自动选择, DIRECT], include-all: true, exclude-filter: "(?i)(剩余|流量|到期|过期|订阅|官网|telegram|电报)"}
+  - {name: ⚡ 自动选择, type: url-test, include-all: true, url: https://www.gstatic.com/generate_204, interval: 300, tolerance: 50, exclude-filter: "(?i)(剩余|流量|到期|过期|订阅|官网|telegram|电报)"}
 
 rules:
   - DOMAIN-SUFFIX,googleapis.cn,🚀 节点选择
@@ -96,8 +100,6 @@ rules:
   - RULE-SET,Loyalsoldier-Ads,REJECT
   - RULE-SET,geosite-cn,DIRECT
   - RULE-SET,geoip-cn,DIRECT
-  - RULE-SET,geosite-private,DIRECT
-  - RULE-SET,geoip-private,DIRECT
   - RULE-SET,geosite-!cn,🚀 节点选择
   - MATCH,🚀 节点选择
 
@@ -137,16 +139,4 @@ rule-providers:
     behavior: domain
     interval: 86400
     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt"
-    format: yaml
-  geosite-private:
-    type: http
-    behavior: domain
-    interval: 86400
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"
-    format: yaml
-  geoip-private:
-    type: http
-    behavior: domain
-    interval: 86400
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
     format: yaml
